@@ -13,6 +13,11 @@ class App extends Component {
   };
 
   actions = {
+    toggle: id => {
+      db.updateTodo(id, {
+        done: !this.state.todos[id].done,
+      });
+    },
     changeTitleInput: title => {
       this.setState({
         newTitle: title,
@@ -25,6 +30,9 @@ class App extends Component {
       this.setState({
         newTitle: '',
       });
+    },
+    deleteTodo: id => {
+      db.deleteTodo(id);
     },
     syncTodos: () => {
       db.syncTodos(todos => {
@@ -42,14 +50,14 @@ class App extends Component {
   }
 
   render() {
-    const { loaded, todoList } = this.state;
+    const { loaded } = this.state;
 
     if (!loaded) return <div>Loading...</div>;
     return (
       <div>
         <h1>Todos</h1>
         <Form {...this.state} {...this.actions} />
-        <Todos {...this.state} />
+        <Todos {...this.state} {...this.actions} />
       </div>
     );
   }
@@ -74,10 +82,33 @@ const Form = ({ newTitle, changeTitleInput, submit }) => (
 );
 
 const Todos = props => {
-  const { todoList } = props;
+  const { todoList, toggle, deleteTodo } = props;
 
   return (
-    <div>{todoList.map(todo => <div key={todo.id}>{todo.title}</div>)}</div>
+    <div>
+      {todoList.map(({ id, title, done }) => (
+        <div key={id}>
+          <input
+            type="checkbox"
+            checked={done}
+            onChange={() => {
+              toggle(id);
+            }}
+          />
+          <span style={{ textDecoration: done && 'line-through' }}>
+            {title}
+          </span>
+          <span
+            style={{ cursor: 'pointer', color: 'red' }}
+            onClick={() => {
+              deleteTodo(id);
+            }}
+          >
+            &#10008;
+          </span>
+        </div>
+      ))}
+    </div>
   );
 };
 
