@@ -34,10 +34,18 @@ class App extends Component {
     return (
       <div>
         <h1>Todos</h1>
-        {todoList.map(todo => <div key={todo.id}>{todo.title}</div>)}
+        <Todos {...this.state} />
       </div>
     );
   }
 }
+
+const Todos = props => {
+  return (
+    <div>
+      {props.todoList.map(todo => <div key={todo.id}>{todo.title}</div>)}
+    </div>
+    );
+};
 
 export default App;
